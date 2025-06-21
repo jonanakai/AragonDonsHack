@@ -36,14 +36,13 @@ def main():
     if not os.path.exists(images_dir):
         os.makedirs(images_dir)
 
-    current_image_path = image_path
     for player_num in range(1, num_players + 1):
         print(f"\n--- Player {player_num}'s turn ---")
         user_guess = input("What do you think the prompt was for the modification?\n> ")
         print(f"You guessed: {user_guess}")
 
         input_params = {
-            "image": open(current_image_path, "rb"),
+            "image": open(image_path, "rb"),  # Always use the original image
             "prompt": user_guess,
             "prompt_upsampling": True
         }
@@ -55,7 +54,6 @@ def main():
         with open(user_img_path, "wb") as file:
             file.write(output.read())
         print(f"AI-generated image saved as {user_img_path}")
-        current_image_path = user_img_path
 
     print("\n(Game round complete! All images saved in the ./images folder.)")
 
