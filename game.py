@@ -10,6 +10,15 @@ api_token = os.getenv("REPLICATE_API_TOKEN")
 client = replicate.Client(api_token=api_token)
 
 def main():
+    # Ensure images directory exists
+    images_dir = os.path.join(os.path.dirname(__file__), "images")
+    # Ensure images directory is empty
+    if os.path.exists(images_dir):
+        for filename in os.listdir(images_dir):
+            file_path = os.path.join(images_dir, filename)
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+    
     print("Welcome to AI Image Telephone (CLI Prototype)!")
     
     # Prompt for number of players
@@ -30,11 +39,6 @@ def main():
     if not (image_path.lower().endswith('.jpg') or image_path.lower().endswith('.jpeg') or image_path.lower().endswith('.png')):
         print("File must be a JPG or PNG image. Exiting.")
         return
-    
-    # Ensure images directory exists
-    images_dir = os.path.join(os.path.dirname(__file__), "images")
-    if not os.path.exists(images_dir):
-        os.makedirs(images_dir)
 
     for player_num in range(1, num_players + 1):
         print(f"\n--- Player {player_num}'s turn ---")
@@ -47,7 +51,7 @@ def main():
             "prompt_upsampling": True
         }
         output = client.run(
-            "black-forest-labs/flux-1.1-pro",
+            "black-forest-labs/flux-kontext-pro",
             input=input_params
         )
         user_img_path = os.path.join(images_dir, f"user{player_num}.jpg")
@@ -56,6 +60,8 @@ def main():
         print(f"AI-generated image saved as {user_img_path}")
 
     print("\n(Game round complete! All images saved in the ./images folder.)")
+
+
 
 if __name__ == "__main__":
     main()
