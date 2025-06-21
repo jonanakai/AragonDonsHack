@@ -1,0 +1,11 @@
+# Prompt Chain - Environment Configuration
+# Copy this file to .env and fill in your actual values
+
+# Black Forest Labs (BFL) Flux API Configuration
+# Get your API key from: https://blackforestlabs.com/
+BFL_API_KEY=your_bfl_api_key_here
+
+# Optional: Override default game settings
+# DEFAULT_ROUNDS=6
+# TURN_TIME_LIMIT=120
+# IMAGE_SIZE=1024x1024 
