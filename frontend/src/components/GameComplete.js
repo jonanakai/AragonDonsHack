@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Eye, Users, Trophy, Star, Zap, Heart, Crown, ChevronLeft, ChevronRight, Play, Pause } from 'lucide-react';
+import { Sparkles, Eye, Users, Trophy, Star, Zap, Heart, Crown, ChevronLeft, ChevronRight, Play, Pause, Target } from 'lucide-react';
 
 const GameComplete = ({ gameState, onResetGame, onNewGame }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -7,6 +7,8 @@ const GameComplete = ({ gameState, onResetGame, onNewGame }) => {
   const [showConfetti, setShowConfetti] = useState(false);
   const [isAutoPlaying, setIsAutoPlaying] = useState(false);
   const [showAllPrompts, setShowAllPrompts] = useState(false);
+  const [analysisResults, setAnalysisResults] = useState(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const totalSlides = gameState.images.length;
 
@@ -22,6 +24,36 @@ const GameComplete = ({ gameState, onResetGame, onNewGame }) => {
 
     startReveal();
   }, []);
+
+  // Auto-analyze results when game is complete
+  useEffect(() => {
+    if (gameState.status === 'completed' && !analysisResults && !isAnalyzing) {
+      analyzeGameResults();
+    }
+  }, [gameState.status, analysisResults, isAnalyzing]);
+
+  const analyzeGameResults = async () => {
+    setIsAnalyzing(true);
+    try {
+      const response = await fetch(`/api/game/${gameState.gameId}/analyze`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (response.ok) {
+        const results = await response.json();
+        setAnalysisResults(results);
+      } else {
+        console.error('Failed to analyze game results');
+      }
+    } catch (error) {
+      console.error('Error analyzing game results:', error);
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
 
   // Auto-play functionality
   useEffect(() => {
@@ -153,7 +185,7 @@ const GameComplete = ({ gameState, onResetGame, onNewGame }) => {
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 relative overflow-hidden">
       <Confetti />
       
-      <div className="h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col">
         {/* Header */}
         <div className="text-center py-4 animate-dramatic-reveal flex-shrink-0">
           <div className="flex items-center justify-center space-x-4 mb-2">
@@ -321,36 +353,83 @@ const GameComplete = ({ gameState, onResetGame, onNewGame }) => {
           </div>
         </div>
 
-        {/* Final Actions (only on last slide) */}
+        {/* Final Actions and Analysis (only on last slide) */}
         {currentSlide === totalSlides - 1 && (
-          <div className="py-4 px-8 flex-shrink-0 bg-gradient-to-r from-yellow-50 to-orange-50 border-t border-yellow-200">
+          <div className="py-6 px-8 bg-gradient-to-r from-yellow-50 to-orange-50 border-t border-yellow-200">
             <div className="max-w-4xl mx-auto">
-              <div className="bg-gradient-to-r from-yellow-100 to-orange-100 border-2 border-yellow-300 rounded-lg p-4 text-center animate-dramatic-reveal">
-                <div className="flex justify-center space-x-4 mb-3">
-                  <Trophy className="h-5 w-5 text-yellow-600 animate-bounce" />
-                  <Star className="h-5 w-5 text-yellow-600 animate-spin" />
-                  <Crown className="h-5 w-5 text-yellow-600 animate-pulse" />
+              <div className="bg-gradient-to-r from-yellow-100 to-orange-100 border-2 border-yellow-300 rounded-lg p-6 text-center animate-dramatic-reveal">
+                <div className="flex justify-center space-x-4 mb-4">
+                  <Trophy className="h-6 w-6 text-yellow-600 animate-bounce" />
+                  <Star className="h-6 w-6 text-yellow-600 animate-spin" />
+                  <Crown className="h-6 w-6 text-yellow-600 animate-pulse" />
                 </div>
-                <h3 className="text-lg font-bold text-yellow-800 mb-2 animate-rainbow-text">
+                <h3 className="text-xl font-bold text-yellow-800 mb-3 animate-rainbow-text">
                   🎊 Amazing Telephone Chain Complete! 🎊
                 </h3>
-                <p className="text-yellow-700 mb-3 text-sm">
+                <p className="text-yellow-700 mb-4 text-sm">
                   Look at how creative everyone was! Each interpretation added something unique to the chain.
                 </p>
                 
-                <div className="flex space-x-3 justify-center">
+                {/* Analysis Results */}
+                {isAnalyzing && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                    <div className="flex items-center justify-center space-x-2">
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+                      <span className="text-blue-700">Analyzing results...</span>
+                    </div>
+                  </div>
+                )}
+                
+                {analysisResults && (
+                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-6 mb-6">
+                    <div className="flex items-center justify-center space-x-2 mb-3">
+                      <Target className="h-6 w-6 text-purple-600" />
+                      <h4 className="font-semibold text-purple-800 text-lg">Final Score</h4>
+                    </div>
+                    <div className="text-4xl font-bold text-purple-600 mb-3">
+                      {analysisResults.final_score}
+                    </div>
+                    <p className="text-purple-700 mb-4">
+                      Based on prompt similarity, image similarity, and overall coherence
+                    </p>
+                    
+                    {/* Score Breakdown */}
+                    <div className="grid grid-cols-3 gap-3 mb-6">
+                      <div className="bg-white p-3 rounded-lg shadow-sm">
+                        <div className="font-semibold text-blue-600 text-sm">Prompt Similarity</div>
+                        <div className="text-gray-800 text-lg font-bold">
+                          {((analysisResults.prompt_semantic_scores.reduce((a, b) => a + b, 0) / analysisResults.prompt_semantic_scores.length + 1) / 2 * 100).toFixed(0)}%
+                        </div>
+                      </div>
+                      <div className="bg-white p-3 rounded-lg shadow-sm">
+                        <div className="font-semibold text-green-600 text-sm">Image Similarity</div>
+                        <div className="text-gray-800 text-lg font-bold">
+                          {((analysisResults.image_similarity_scores.reduce((a, b) => a + b, 0) / analysisResults.image_similarity_scores.length + 1) / 2 * 100).toFixed(0)}%
+                        </div>
+                      </div>
+                      <div className="bg-white p-3 rounded-lg shadow-sm">
+                        <div className="font-semibold text-red-600 text-sm">Text Coherence</div>
+                        <div className="text-gray-800 text-lg font-bold">
+                          {(analysisResults.prompt_levenshtein_scores.reduce((a, b) => a + b, 0) / analysisResults.prompt_levenshtein_scores.length * 100).toFixed(0)}%
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                <div className="flex space-x-4 justify-center">
                   <button
                     onClick={onResetGame}
-                    className="btn-secondary flex items-center px-4 py-2 text-sm hover:scale-105 transition-transform duration-200"
+                    className="btn-secondary flex items-center px-6 py-3 text-base hover:scale-105 transition-transform duration-200"
                   >
-                    <Sparkles className="h-4 w-4 mr-1 animate-spin" />
+                    <Sparkles className="h-5 w-5 mr-2 animate-spin" />
                     Play Again
                   </button>
                   <button
                     onClick={onNewGame}
-                    className="btn-primary flex items-center px-4 py-2 text-sm hover:scale-105 transition-transform duration-200"
+                    className="btn-primary flex items-center px-6 py-3 text-base hover:scale-105 transition-transform duration-200"
                   >
-                    <Trophy className="h-4 w-4 mr-1 animate-bounce" />
+                    <Trophy className="h-5 w-5 mr-2 animate-bounce" />
                     New Game
                   </button>
                 </div>

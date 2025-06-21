@@ -94,17 +94,6 @@ const PromptInput = ({ value, onChange, onSubmit, currentPlayer, totalPlayers, p
         </div>
       </div>
 
-      {/* Game Mechanic Explanation */}
-      {currentPlayer > 1 && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <h4 className="font-semibold text-yellow-800 mb-2">🎯 Telephone Game Rule</h4>
-          <p className="text-yellow-700 text-sm">
-            You can see what Player {currentPlayer - 1} created, but the AI will modify the <strong>original image</strong> based on your prompt. 
-            Try to guess what prompt Player {currentPlayer - 1} used!
-          </p>
-        </div>
-      )}
-
       {/* Prompt Input */}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>

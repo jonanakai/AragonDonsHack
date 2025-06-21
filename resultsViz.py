@@ -92,10 +92,33 @@ def main(reference_prompt, example_prompts, reference_image, example_images):
     plt.rcParams['axes.linewidth'] = 1.2
     plt.rcParams['grid.alpha'] = 0.3
     
+    # Ensure all arrays have the same length for consistent plotting
+    max_length = max(len(prompt_semantic_scores), len(prompt_levenshtein_scores), len(image_similarity_scores))
+    
+    # Pad shorter arrays with the last value to match the longest array
+    if len(prompt_semantic_scores) < max_length:
+        last_value = prompt_semantic_scores[-1] if prompt_semantic_scores else 0
+        prompt_semantic_scores.extend([last_value] * (max_length - len(prompt_semantic_scores)))
+    
+    if len(prompt_levenshtein_scores) < max_length:
+        last_value = prompt_levenshtein_scores[-1] if prompt_levenshtein_scores else 0
+        prompt_levenshtein_scores.extend([last_value] * (max_length - len(prompt_levenshtein_scores)))
+    
+    if len(image_similarity_scores) < max_length:
+        last_value = image_similarity_scores[-1] if image_similarity_scores else 0
+        image_similarity_scores.extend([last_value] * (max_length - len(image_similarity_scores)))
+    
+    # Create consistent x-axis for all plots
+    x_axis = list(range(1, max_length + 1))
+    
+    print(f"Plotting with {max_length} users for all charts")
+    print(f"Prompt semantic scores: {len(prompt_semantic_scores)}")
+    print(f"Prompt levenshtein scores: {len(prompt_levenshtein_scores)}")
+    print(f"Image similarity scores: {len(image_similarity_scores)}")
+    
     # Plot 1: Reference vs Example Prompts Semantic Similarity
     plt.figure(figsize=(10, 6))
-    x_prompts = list(range(1, len(prompt_semantic_scores) + 1))
-    plt.plot(x_prompts, prompt_semantic_scores, 'b-o', linewidth=2.5, markersize=8, 
+    plt.plot(x_axis, prompt_semantic_scores, 'b-o', linewidth=2.5, markersize=8, 
              markerfacecolor='lightblue', markeredgecolor='blue', markeredgewidth=2)
     
     plt.title('Semantic Similarity To Original Prompt', fontsize=16, fontweight='bold', pad=20)
@@ -104,7 +127,7 @@ def main(reference_prompt, example_prompts, reference_image, example_images):
     plt.grid(True, alpha=0.3)
     
     # Set x-axis to show only whole numbers
-    plt.xticks(x_prompts)
+    plt.xticks(x_axis)
     
     # Allow full range for y-axis (can include negative values)
     y_min = min(prompt_semantic_scores) - 0.1
@@ -127,7 +150,7 @@ def main(reference_prompt, example_prompts, reference_image, example_images):
     
     # Plot 2: Reference vs Example Prompts Levenshtein Distance
     plt.figure(figsize=(10, 6))
-    plt.plot(x_prompts, prompt_levenshtein_scores, 'r-s', linewidth=2.5, markersize=8,
+    plt.plot(x_axis, prompt_levenshtein_scores, 'r-s', linewidth=2.5, markersize=8,
              markerfacecolor='lightcoral', markeredgecolor='red', markeredgewidth=2)
     
     plt.title('Levenshtein Similarity To Original Prompt', fontsize=16, fontweight='bold', pad=20)
@@ -136,7 +159,7 @@ def main(reference_prompt, example_prompts, reference_image, example_images):
     plt.grid(True, alpha=0.3)
     
     # Set x-axis to show only whole numbers
-    plt.xticks(x_prompts)
+    plt.xticks(x_axis)
     
     # Keep y-axis scale 0-1 for Levenshtein
     plt.ylim(0, 1)
@@ -157,8 +180,7 @@ def main(reference_prompt, example_prompts, reference_image, example_images):
     
     # Plot 3: Reference vs Example Images Similarity
     plt.figure(figsize=(10, 6))
-    x_images = list(range(1, len(image_similarity_scores) + 1))
-    plt.plot(x_images, image_similarity_scores, 'g-^', linewidth=2.5, markersize=8,
+    plt.plot(x_axis, image_similarity_scores, 'g-^', linewidth=2.5, markersize=8,
              markerfacecolor='lightgreen', markeredgecolor='green', markeredgewidth=2)
     
     plt.title('Visual Similarity To First Generation', fontsize=16, fontweight='bold', pad=20)
@@ -167,7 +189,7 @@ def main(reference_prompt, example_prompts, reference_image, example_images):
     plt.grid(True, alpha=0.3)
     
     # Set x-axis to show only whole numbers
-    plt.xticks(x_images)
+    plt.xticks(x_axis)
     
     # Allow full range for y-axis (can include negative values)
     y_min = min(image_similarity_scores) - 0.1

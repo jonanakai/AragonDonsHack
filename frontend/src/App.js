@@ -12,19 +12,23 @@ function App() {
   const [gameId, setGameId] = useState(null);
   const [gameState, setGameState] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [creatingGame, setCreatingGame] = useState(false);
   const [error, setError] = useState(null);
 
   const createGame = async (numPlayers) => {
-    setLoading(true);
+    setCreatingGame(true);
     setError(null);
     try {
       const response = await axios.post('/api/game/create', { numPlayers });
       setGameId(response.data.gameId);
-      setGameState(response.data);
+      
+      // Fetch the complete game state after creation
+      const gameResponse = await axios.get(`/api/game/${response.data.gameId}/status`);
+      setGameState(gameResponse.data);
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to create game');
     } finally {
-      setLoading(false);
+      setCreatingGame(false);
     }
   };
 
@@ -98,7 +102,7 @@ function App() {
 
   const clearError = () => setError(null);
 
-  if (loading) {
+  if (loading || creatingGame) {
     return <LoadingSpinner />;
   }
 
@@ -124,7 +128,7 @@ function App() {
               gameId ? (
                 <Navigate to="/game" replace />
               ) : (
-                <HomePage onCreateGame={createGame} />
+                <HomePage onCreateGame={createGame} isCreating={creatingGame} />
               )
             } 
           />

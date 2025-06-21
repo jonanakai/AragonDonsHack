@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Users, Image, Sparkles, ArrowRight } from 'lucide-react';
 
-const HomePage = ({ onCreateGame }) => {
+const HomePage = ({ onCreateGame, isCreating = false }) => {
   const [numPlayers, setNumPlayers] = useState(2);
 
   const handleCreateGame = () => {
@@ -57,10 +57,20 @@ const HomePage = ({ onCreateGame }) => {
           {/* Start Game Button */}
           <button
             onClick={handleCreateGame}
-            className="btn-primary w-full flex items-center justify-center text-lg py-3"
+            disabled={isCreating}
+            className="btn-primary w-full flex items-center justify-center text-lg py-3 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Start Game
-            <ArrowRight className="ml-2 h-5 w-5" />
+            {isCreating ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                Creating Game...
+              </>
+            ) : (
+              <>
+                Start Game
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </>
+            )}
           </button>
         </div>
 
