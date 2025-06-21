@@ -128,6 +128,7 @@ const GamePage = ({
                   onSubmit={handlePromptSubmit}
                   currentPlayer={gameState?.currentPlayer}
                   totalPlayers={gameState?.numPlayers}
+                  prompts={gameState?.prompts}
                 />
               </div>
             )}
@@ -139,9 +140,15 @@ const GamePage = ({
                   <h2 className="text-2xl font-semibold text-gray-800 mb-2">
                     Game Complete!
                   </h2>
-                  <p className="text-gray-600 mb-6">
+                  <p className="text-gray-600 mb-4">
                     All players have taken their turns. Check out the image chain below!
                   </p>
+                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-6">
+                    <h3 className="font-semibold text-purple-800 mb-2">🎉 Reveal Time!</h3>
+                    <p className="text-purple-700 text-sm">
+                      All prompts are now visible! See how each player interpreted the previous modifications.
+                    </p>
+                  </div>
                   <div className="flex space-x-3 justify-center">
                     <button
                       onClick={onResetGame}

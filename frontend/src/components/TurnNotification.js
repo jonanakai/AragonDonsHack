@@ -54,8 +54,8 @@ const TurnNotification = ({ currentPlayer, totalPlayers, onContinue }) => {
             </div>
             <p className="text-blue-700 text-sm">
               {currentPlayer === 1 
-                ? "You'll be modifying the original image"
-                : `You'll be modifying Player ${currentPlayer - 1}'s creation`
+                ? "You'll see an AI-generated image and need to guess its prompt"
+                : `You'll see Player ${currentPlayer - 1}'s creation, but AI works from the original image`
               }
             </p>
           </div>

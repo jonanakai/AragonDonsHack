@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Send, Sparkles, Lightbulb, CheckCircle, Users } from 'lucide-react';
 
-const PromptInput = ({ value, onChange, onSubmit, currentPlayer, totalPlayers }) => {
+const PromptInput = ({ value, onChange, onSubmit, currentPlayer, totalPlayers, prompts }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -96,8 +96,10 @@ const PromptInput = ({ value, onChange, onSubmit, currentPlayer, totalPlayers })
             </h3>
             <p className="text-gray-600 text-sm">
               {currentPlayer === 1 
-                ? "You're modifying the original image"
-                : `You're modifying Player ${currentPlayer - 1}'s image`
+                ? prompts[0]?.player === 'AI' 
+                  ? "You see an AI-generated image. What prompt do you think the AI used?"
+                  : "You're modifying the original image"
+                : `You see Player ${currentPlayer - 1}'s image, but AI works from the original`
               }
             </p>
           </div>
@@ -106,6 +108,17 @@ const PromptInput = ({ value, onChange, onSubmit, currentPlayer, totalPlayers })
           </div>
         </div>
       </div>
+
+      {/* Game Mechanic Explanation */}
+      {currentPlayer > 1 && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <h4 className="font-semibold text-yellow-800 mb-2">🎯 Telephone Game Rule</h4>
+          <p className="text-yellow-700 text-sm">
+            You can see what Player {currentPlayer - 1} created, but the AI will modify the <strong>original image</strong> based on your prompt. 
+            Try to guess what prompt Player {currentPlayer - 1} used!
+          </p>
+        </div>
+      )}
 
       {/* Prompt Input */}
       <form onSubmit={handleSubmit} className="space-y-4">
