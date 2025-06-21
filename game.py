@@ -42,18 +42,21 @@ def main():
         user_guess = input("What do you think the prompt was for the modification?\n> ")
         print(f"You guessed: {user_guess}")
 
-        input_params = {
-            "image": open(current_image_path, "rb"),
-            "prompt": user_guess,
-            "prompt_upsampling": True
-        }
-        output = client.run(
-            "black-forest-labs/flux-1.1-pro",
-            input=input_params
-        )
+        with open(image_path, "rb") as file:
+            model_input = {
+                "prompt": user_guess,
+                "input_image": file,
+                "output_format": "jpg"
+            }
+            
+            model_output = replicate.run(
+                "black-forest-labs/flux-kontext-pro",
+                input=model_input
+            )
+
         user_img_path = os.path.join(images_dir, f"user{player_num}.jpg")
         with open(user_img_path, "wb") as file:
-            file.write(output.read())
+            file.write(model_output.read())
         print(f"AI-generated image saved as {user_img_path}")
         current_image_path = user_img_path
 
