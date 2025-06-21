@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Send, Sparkles, Lightbulb, CheckCircle, Users } from 'lucide-react';
+import { Send, Sparkles, CheckCircle, Users } from 'lucide-react';
 
 const PromptInput = ({ value, onChange, onSubmit, currentPlayer, totalPlayers, prompts }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -21,21 +21,6 @@ const PromptInput = ({ value, onChange, onSubmit, currentPlayer, totalPlayers, p
   const handleNextPlayer = () => {
     setIsSubmitted(false);
     onChange('');
-  };
-
-  const examplePrompts = [
-    "Make this a 90s cartoon style",
-    "Transform into a cyberpunk scene",
-    "Add a magical forest background",
-    "Make it look like a watercolor painting",
-    "Convert to black and white with dramatic lighting",
-    "Add a futuristic city skyline",
-    "Make it look like an oil painting",
-    "Transform into a comic book style"
-  ];
-
-  const handleExampleClick = (example) => {
-    onChange(example);
   };
 
   // Show success message after submission
@@ -129,7 +114,7 @@ const PromptInput = ({ value, onChange, onSubmit, currentPlayer, totalPlayers, p
           <textarea
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            placeholder="Describe how you want to modify the image... (e.g., 'Make this a 90s cartoon style')"
+            placeholder="Describe how you want to modify the image..."
             className="input-field h-24 resize-none"
             disabled={isSubmitting}
           />
@@ -153,25 +138,6 @@ const PromptInput = ({ value, onChange, onSubmit, currentPlayer, totalPlayers, p
           )}
         </button>
       </form>
-
-      {/* Example Prompts */}
-      <div>
-        <div className="flex items-center mb-3">
-          <Lightbulb className="h-4 w-4 text-yellow-500 mr-2" />
-          <span className="text-sm font-medium text-gray-700">Example Prompts</span>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          {examplePrompts.map((prompt, index) => (
-            <button
-              key={index}
-              onClick={() => handleExampleClick(prompt)}
-              className="text-left p-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded transition-colors duration-200"
-            >
-              "{prompt}"
-            </button>
-          ))}
-        </div>
-      </div>
     </div>
   );
 };

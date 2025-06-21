@@ -6,6 +6,7 @@ import PromptInput from './PromptInput';
 import ImageGallery from './ImageGallery';
 import GameStatus from './GameStatus';
 import TurnNotification from './TurnNotification';
+import GameComplete from './GameComplete';
 
 const GamePage = ({ 
   gameId, 
@@ -60,6 +61,17 @@ const GamePage = ({
   };
 
   const currentStep = getCurrentStep();
+
+  // Show the exciting GameComplete component when game is finished
+  if (currentStep === 'complete') {
+    return (
+      <GameComplete 
+        gameState={gameState}
+        onResetGame={onResetGame}
+        onNewGame={onNewGame}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen p-4">
@@ -130,42 +142,6 @@ const GamePage = ({
                   totalPlayers={gameState?.numPlayers}
                   prompts={gameState?.prompts}
                 />
-              </div>
-            )}
-
-            {currentStep === 'complete' && (
-              <div className="card">
-                <div className="text-center">
-                  <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-                  <h2 className="text-2xl font-semibold text-gray-800 mb-2">
-                    Game Complete!
-                  </h2>
-                  <p className="text-gray-600 mb-4">
-                    All players have taken their turns. Check out the image chain below!
-                  </p>
-                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-6">
-                    <h3 className="font-semibold text-purple-800 mb-2">🎉 Reveal Time!</h3>
-                    <p className="text-purple-700 text-sm">
-                      All prompts are now visible! See how each player interpreted the previous modifications.
-                    </p>
-                  </div>
-                  <div className="flex space-x-3 justify-center">
-                    <button
-                      onClick={onResetGame}
-                      className="btn-secondary flex items-center"
-                    >
-                      <RotateCcw className="h-4 w-4 mr-2" />
-                      Play Again
-                    </button>
-                    <button
-                      onClick={onNewGame}
-                      className="btn-primary flex items-center"
-                    >
-                      <Home className="h-4 w-4 mr-2" />
-                      New Game
-                    </button>
-                  </div>
-                </div>
               </div>
             )}
           </div>
