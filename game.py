@@ -42,9 +42,9 @@ def main():
         user_guess = input("What do you think the prompt was for the modification?\n> ")
         print(f"You guessed: {user_guess}")
 
-        with open("images/input/guano-point.jpg", "rb") as file:
+        with open(image_path, "rb") as file:
             model_input = {
-                "prompt": "add an airplane",
+                "prompt": user_guess,
                 "input_image": file,
                 "output_format": "jpg"
             }
@@ -53,7 +53,7 @@ def main():
                 "black-forest-labs/flux-kontext-pro",
                 input=model_input
             )
-            
+
         user_img_path = os.path.join(images_dir, f"user{player_num}.jpg")
         with open(user_img_path, "wb") as file:
             file.write(model_output.read())
