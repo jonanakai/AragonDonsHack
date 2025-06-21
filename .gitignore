@@ -30,7 +30,7 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# React build
+# React build (but keep source files)
 frontend/build/
 frontend/.env.local
 frontend/.env.development.local
@@ -87,7 +87,7 @@ dist
 
 # Gatsby files
 .cache/
-public
+# public (commented out to allow frontend/public)
 
 # Storybook build outputs
 .out
